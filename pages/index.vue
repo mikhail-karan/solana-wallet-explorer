@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div>
-      <Logo />
+      <!-- Logo / -->
       <h1 class="title">
         solana-nuxt
       </h1>
@@ -11,29 +11,80 @@
           class="button--green"
           @click="connectWallet"
         >
-          Connect
-        </button>
+          Connect Wallet
+        </button>        
         <div v-else>
           Public Key: {{walletPubkey.toBase58()}} <br>
           Balance: {{balance}}
         </div>
+        <br>
+        <br>
+        <div v-if="!walletPubkey">
+
+          -- OR --
+          <br>
+          <input type="text"               
+            v-on:keyup.enter="connectWalletFromPubKey" 
+            v-model="manPubKey"            
+            />
+
+
+          <button             
+            class="button--green"
+            @click="connectWalletFromPubKey"
+            >
+            Let's Go!
+          </button>  
+
+        </div>``
+
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { Connection, SystemProgram, Transaction, clusterApiUrl, publicKey } from '@solana/web3.js';
+import { Connection, SystemProgram, Transaction, clusterApiUrl, PublicKey } from '@solana/web3.js';
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
 import Wallet from '@project-serum/sol-wallet-adapter';
 export default {
   data(){
     return {
       walletPubkey: null,
-      balance: ''
+      balance: '',
+      manPubKey: '2HQmxjk3i2y9RBDzw4CtXwMDt2YPDrNZYLdBxJ2ouD5Y'
     }
   },
   methods: {
+
+    connectWalletFromPubKey() {
+        console.log('pubkey: ' + this.manPubKey);
+
+        const network = clusterApiUrl('mainnet-beta')
+        const connection = new Connection(network)
+        const _key = new PublicKey(this.manPubKey)
+        connection.getBalance(_key).then(function (balResp) {
+            console.log(balResp)
+        })
+
+        connection.getAccountInfo(_key).then(function (accountInfo) {
+            //debugger
+            console.log('Account Info: ' + accountInfo)
+        })
+
+
+        /*
+        var _params = {
+          mint: 'SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt'
+        };
+        connection.getTokenAccountsByOwner(_key, _params).then(function (tokenAccounts) {
+            //debugger
+            console.log('Token Accounts: ' + tokenAccounts)
+        })
+        */        
+
+    },
+
     connectWallet(){
 
       const network = clusterApiUrl('mainnet-beta')
@@ -111,5 +162,12 @@ export default {
 
 .links {
   padding-top: 15px;
+}
+
+input {
+  border:1px solid gray;
+  margin:20px;
+  min-width:450px;
+  padding:5px;
 }
 </style>
