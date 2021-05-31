@@ -36,7 +36,12 @@
             Let's Go!
           </button>  
 
-        </div>``
+        </div>
+
+        <br><br>
+        <NuxtLink to="dashboard" v-if="walletPubkey">
+          Go!
+        </NuxtLink>
 
       </div>
     </div>
@@ -67,21 +72,25 @@ export default {
             console.log(balResp)
         })
 
+        let self = this;
         connection.getAccountInfo(_key).then(function (accountInfo) {
             //debugger
             console.log('Account Info: ' + accountInfo)
+            self.walletPubkey = _key;
         })
 
 
-        /*
+       var mintKey = new PublicKey('SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt');
+        
         var _params = {
-          mint: 'SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt'
+          mint: mintKey
         };
+               
         connection.getTokenAccountsByOwner(_key, _params).then(function (tokenAccounts) {
             //debugger
             console.log('Token Accounts: ' + tokenAccounts)
         })
-        */        
+              
 
     },
 
