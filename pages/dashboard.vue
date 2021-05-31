@@ -30,8 +30,10 @@
 </template>
 
 <script>
+//console.log('DB pubkey: ' + this.manPubKey);
 export default {
 
+  
 }
 </script>
 
