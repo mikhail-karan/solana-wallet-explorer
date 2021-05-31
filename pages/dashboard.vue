@@ -1,6 +1,6 @@
 <template>
   <div>
-      Hello Dashboard!
+      Hello Dashboard!!
         <br>
 
 <div>
