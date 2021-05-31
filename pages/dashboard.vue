@@ -5,7 +5,7 @@
 
 <div>
   <b-card
-    title="Card Title"
+    title="Its a Beautiful Day"
     img-src="https://picsum.photos/600/300/?image=25"
     img-alt="Image"
     img-top
