@@ -14,7 +14,7 @@
     class="mb-2"
   >
     <b-card-text>
-      Some quick example text to build on the card title and make up the bulk of the card's content.
+      Public Key: {{pubKey.toBase58()}}
     </b-card-text>
 
     <b-button href="#" variant="primary">Go somewhere</b-button>
@@ -30,9 +30,13 @@
 </template>
 
 <script>
+import { Connection, SystemProgram, Transaction, clusterApiUrl, PublicKey } from '@solana/web3.js';
 //console.log('DB pubkey: ' + this.manPubKey);
+import { mapState } from 'vuex'
 export default {
-
+  computed: mapState({
+    pubKey: state => new PublicKey(state.publicKey.pubKey) 
+  })
   
 }
 </script>
