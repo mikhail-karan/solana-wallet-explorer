@@ -3,23 +3,23 @@
       Hello Dashboard!!!
         <br>
 
-<div>
-  <b-card
-    title="Its a Beautiful Day"
-    img-src="https://picsum.photos/600/300/?image=25"
-    img-alt="Image"
-    img-top
-    tag="article"
-    style="max-width: 20rem;"
-    class="mb-2"
-  >
-    <b-card-text>
-      Public Key: {{pubKey.toBase58()}}
-    </b-card-text>
+    <div>
+      <b-card
+        title="Its a Beautiful Day"
+        img-src="https://picsum.photos/600/300/?image=25"
+        img-alt="Image"
+        img-top
+        tag="article"
+        style="max-width: 20rem;"
+        class="mb-2"
+      >
+        <b-card-text v-if="pubKey">
+          Public Key: {{pubKey.toBase58()}}
+        </b-card-text>
 
-    <b-button href="#" variant="primary">Go somewhere</b-button>
-  </b-card>
-</div>
+        <b-button href="#" variant="primary">Go somewhere</b-button>
+      </b-card>
+    </div>
 
 
   </div>
@@ -36,7 +36,17 @@ import { mapState } from 'vuex'
 export default {
   computed: mapState({
     pubKey: state => new PublicKey(state.publicKey.pubKey) 
-  })
+  }),
+  mounted(){
+    //console.log(this.pubKey.toBase58());
+  },
+  methods:{
+    /*
+    disconnect() {
+      console.log('disconnecting...');
+    }
+    */
+  }
   
 }
 </script>

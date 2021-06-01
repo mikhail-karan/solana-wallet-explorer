@@ -53,17 +53,37 @@
 import { Connection, SystemProgram, Transaction, clusterApiUrl, PublicKey } from '@solana/web3.js';
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
 import Wallet from '@project-serum/sol-wallet-adapter';
-export default {
+import { mapState } from 'vuex';
+export default {  
   data(){
     return {
-      walletPubkey: null,
+      //walletPubkey: null,
       balance: '',
       manPubKey: '2HQmxjk3i2y9RBDzw4CtXwMDt2YPDrNZYLdBxJ2ouD5Y'
     }
   },
+  computed: mapState({
+    //walletPubkey: state => new PublicKey(state.publicKey.pubKey) 
+     walletPubkey: state => {
+        if ( state.publicKey.pubKey ) {
+            return new PublicKey(state.publicKey.pubKey) 
+        } else {
+            return null
+        }
+    }
+  }),
+  mounted(){        
+        if ( this.walletPubkey ) {
+          this.$router.push('dashboard');
+          return;
+        }
+  },
   methods: {
 
     connectWalletFromPubKey() {
+
+
+
         console.log('pubkey: ' + this.manPubKey);
 
         const network = clusterApiUrl('mainnet-beta')
