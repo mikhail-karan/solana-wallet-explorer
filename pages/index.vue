@@ -78,8 +78,7 @@ export default {
             //debugger
             console.log('Account Info: ' + accountInfo)
             self.walletPubkey = _key;
-            debugger
-            this.$store.commit('set_pub_key', _key)
+            self.$store.commit('publicKey/setKey', _key.toBase58())
         })
 
 
@@ -118,7 +117,6 @@ export default {
         }) 
          console.log('Connected to ' + publicKey.toBase58())
          console.log(selectedWallet)
-         debugger
          self.$store.commit('publicKey/setKey', publicKey.toBase58())
 
          
