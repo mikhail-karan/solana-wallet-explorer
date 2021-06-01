@@ -23,14 +23,16 @@
 </template>
 
 <script>
-import { Connection, SystemProgram, Transaction, clusterApiUrl, publicKey } from '@solana/web3.js';
+import { Connection, SystemProgram, Transaction, clusterApiUrl, PublicKey, TokenAccountsFilter } from '@solana/web3.js';
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
 import Wallet from '@project-serum/sol-wallet-adapter';
+import axios from 'axios'
 export default {
   data(){
     return {
       walletPubkey: null,
-      balance: ''
+      balance: '',
+      tokenWalletAccounts: []
     }
   },
   methods: {
@@ -40,6 +42,8 @@ export default {
       const providerUrl = 'https://www.sollet.io'
       const connection = new Connection(network)
       let selectedWallet = new Wallet(providerUrl)
+
+
       selectedWallet.on('connect', publicKey =>{
         this.walletPubkey = publicKey
         connection.getBalance(publicKey)
@@ -49,19 +53,52 @@ export default {
         
 
         )
-        connection.getProgramAccounts(publicKey).then(res => {
-          console.log('Program info: ', res)
-        }) 
+
+
+        //JSON RPC Test
+        const networkUrl = 'https://api.mainnet-beta.solana.com'
+        axios.post(networkUrl, {
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'getTokenAccountsByOwner',
+          params: [publicKey.toBase58(),
+            {
+              "mint": 'z3dn17yLaGMKffVogeFHQ9zWVcXgqgf3PQnDsNs2g6M'
+            }
+          ]
+        })
+        .then(res => {
+          console.log(res)
+          res.data.result.value //Array
+        })
+        
+    
          console.log('Connected to ' + publicKey.toBase58())
          console.log(selectedWallet)
+
+         new TokenListProvider().resolve().then(tokens => {
+        const tokenList = tokens.filterByClusterSlug('mainnet-beta').getList();
+        console.log('Token List: ', tokenList)
+        // tokenList.forEach(token => {
+        //   let _pubMint = new PublicKey(token.address)
+        //   connection.getTokenAccountsByOwner(publicKey, {
+        //     mint: _pubMint
+        //   })
+        //   .then(res => {
+        //     if (res.value && res.value[0].account?.lamports > 0){
+        //       this.tokenWalletAccounts.push(res.value[0].account)
+        //       console.log(this.tokenWalletAccounts)
+        //     }
+        //   })
+        // })
+        
+
+      })
 
          
       });
       selectedWallet.on('disconnect', () => console.log('Disconnected'));
-      new TokenListProvider().resolve().then(tokens => {
-        const tokenList = tokens.filterByClusterSlug('mainnet-beta').getList();
-        console.log('Token List: ', tokenList)
-      })
+      
       selectedWallet.connect()
     }
   }
