@@ -31,8 +31,11 @@
 
 <script>
 //console.log('DB pubkey: ' + this.manPubKey);
+import { mapState } from 'vuex'
 export default {
-
+  computed: mapState({
+    pubKey: state => state.publicKey.pubKey
+  })
   
 }
 </script>

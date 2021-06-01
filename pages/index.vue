@@ -78,6 +78,8 @@ export default {
             //debugger
             console.log('Account Info: ' + accountInfo)
             self.walletPubkey = _key;
+            debugger
+            this.$store.commit('set_pub_key', _key)
         })
 
 
@@ -101,6 +103,7 @@ export default {
       const providerUrl = 'https://www.sollet.io'
       const connection = new Connection(network)
       let selectedWallet = new Wallet(providerUrl)
+      let self = this
       selectedWallet.on('connect', publicKey =>{
         this.walletPubkey = publicKey
         connection.getBalance(publicKey)
@@ -115,6 +118,8 @@ export default {
         }) 
          console.log('Connected to ' + publicKey.toBase58())
          console.log(selectedWallet)
+         debugger
+         self.$store.commit('publicKey/setKey', publicKey.toBase58())
 
          
       });
