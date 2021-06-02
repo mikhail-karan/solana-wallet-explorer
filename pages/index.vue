@@ -2,49 +2,62 @@
   <div class="container">
     <div>
       <!-- Logo / -->
-      <h1 class="title">
-        solana-nuxt
-      </h1>
+      <h4 class="subtitle">
+        Manage your Solana assets and liabilities in one simple interface
+      </h4>
+      <br>
+      <b-container fluid="md">
+        <b-row>
+            <b-col>
+              <div v-if="!walletPubkey">
+                <input type="text"               
+                  v-on:keyup.enter="connectWalletFromPubKey" 
+                  v-model="manPubKey"            
+                />
+                &nbsp;&nbsp;
+                <button             
+                  class="button--green"
+                  @click="connectWalletFromPubKey"
+                  >
+                  Let's Go!
+                </button>  
+
+              </div> 
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col class="m-3">
+              -- OR --
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
+              <button
+                v-if="!walletPubkey"
+                class="button--green"
+                @click="connectWallet"
+              >
+                Connect Wallet
+              </button>
+            </b-col>
+        </b-row>
+      </b-container>
+
+      <!--
       <div class="links">
-        <button
-          v-if="!walletPubkey"
-          class="button--green"
-          @click="connectWallet"
-        >
-          Connect Wallet
-        </button>        
+        
         <div v-else>
           Public Key: {{walletPubkey.toBase58()}} <br>
           Balance: {{balance}}
         </div>
         <br>
         <br>
-        <div v-if="!walletPubkey">
 
-          -- OR --
-          <br>
-          <input type="text"               
-            v-on:keyup.enter="connectWalletFromPubKey" 
-            v-model="manPubKey"            
-            />
-
-
-          <button             
-            class="button--green"
-            @click="connectWalletFromPubKey"
-            >
-            Let's Go!
-          </button>  
-
-        </div>
-
-        <br><br>
         <NuxtLink to="dashboard" v-if="walletPubkey">
           Go!
-        </NuxtLink>
-
-
+        </NuxtLink>        
       </div>
+      -->
     </div>
   </div>
 </template>
@@ -98,10 +111,11 @@ export default {
             //debugger
             console.log('Account Info: ' + accountInfo)
             self.walletPubkey = _key;
-            self.$store.commit('publicKey/setKey', _key.toBase58())
+            self.$store.commit('publicKey/setKey', _key.toBase58());
+            self.$router.push('dashboard')
         })
 
-
+        /*
        var mintKey = new PublicKey('SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt');
         
         var _params = {
@@ -112,6 +126,7 @@ export default {
             //debugger
             console.log('Token Accounts: ' + tokenAccounts)
         })
+        */
               
 
     },
@@ -187,10 +202,11 @@ export default {
 
 .subtitle {
   font-weight: 300;
-  font-size: 42px;
+  font-size: 30px;
   color: #526488;
   word-spacing: 5px;
   padding-bottom: 15px;
+  text-align: left;
 }
 
 .links {
@@ -199,7 +215,6 @@ export default {
 
 input {
   border:1px solid gray;
-  margin:20px;
   min-width:450px;
   padding:5px;
 }

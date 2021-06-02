@@ -39,6 +39,20 @@ export default {
   }),
   mounted(){
     //console.log(this.pubKey.toBase58());
+
+    const network = clusterApiUrl('mainnet-beta')
+    const connection = new Connection(network)
+
+    const _key = this.pubKey;
+    connection.getBalance(_key).then(function (balResp) {
+        console.log(balResp)
+    })
+
+    let self = this;
+    connection.getAccountInfo(_key).then(function (accountInfo) {
+        debugger
+        console.log('Account Info: ' + accountInfo)
+    })
   },
   methods:{
     /*
