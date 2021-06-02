@@ -1,32 +1,52 @@
 <template>
   <div>
-      Hello Dashboard!!!
-        <br>
+      <b-container>        
+        <b-row v-if="pubKey">
+            <b-col>
+              <h2>Account Info</h2>
+              <br>
+              Executable: {{isExecutable}}
+              <br>
+              Lamports: {{lamports}}
+            </b-col>
 
-    <div>
-      <b-card
-        title="Its a Beautiful Day"
-        img-src="https://picsum.photos/600/300/?image=25"
-        img-alt="Image"
-        img-top
-        tag="article"
-        style="max-width: 20rem;"
-        class="mb-2"
-      >
-        <b-card-text v-if="pubKey">
-          Public Key: {{pubKey.toBase58()}}
-        </b-card-text>
+            <b-col>
+              <span>Wallet Balance: {{walletBalance}}</span>
+            </b-col>
+            
+        </b-row>
 
-        <b-button href="#" variant="primary">Go somewhere</b-button>
-      </b-card>
-    </div>
+        <!--
+        <b-row v-if="pubKey">
+            <span>Wallet Balance: {{this.walletBalance}}</span>
+        </b-row>
+        -->
+      </b-container>
 
+      <!--
+      <div>
+        <b-card
+          title="Its a Beautiful Day"
+          img-src="https://picsum.photos/600/300/?image=25"
+          img-alt="Image"
+          img-top
+          tag="article"
+          style="max-width: 20rem;"
+          class="mb-2"
+        >
+          <b-card-text v-if="pubKey">
+            Public Key: {{pubKey.toBase58()}}
+            <br>
+            Wallet Balance: {{this.walletBalance}}
+          </b-card-text>
+
+          <b-button href="#" variant="primary">Go somewhere</b-button>
+        </b-card>
+      </div>
+      -->
 
   </div>
 
-
-
-  
 </template>
 
 <script>
@@ -39,20 +59,37 @@ export default {
   }),
   mounted(){
     //console.log(this.pubKey.toBase58());
+    let self = this;
 
     const network = clusterApiUrl('mainnet-beta')
     const connection = new Connection(network)
-
+    
+    const walletBalance = ''
+    const isExecutable = ''
+    const lamports = ''
+    
     const _key = this.pubKey;
     connection.getBalance(_key).then(function (balResp) {
         console.log(balResp)
+        self.walletBalance = balResp;
     })
 
-    let self = this;
+    
     connection.getAccountInfo(_key).then(function (accountInfo) {
-        debugger
+        //debugger
         console.log('Account Info: ' + accountInfo)
+        
+        self.isExecutable = accountInfo.executable;
+        self.lamports = accountInfo.lamports;
+        
     })
+  },
+  data() {
+    return {
+      walletBalance: this.walletBalance,
+      lamports: this.lamports,
+      isExecutable: this.isExecutable,
+    };
   },
   methods:{
     /*
