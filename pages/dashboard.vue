@@ -15,13 +15,22 @@
             </b-col>
             
         </b-row>
-
+        
         <!--
         <b-row v-if="pubKey">
             <span>Wallet Balance: {{this.walletBalance}}</span>
         </b-row>
         -->
+        <div class="flex flex-col">
+          <div class="flex flex-row my-2" v-for="token in walletTokens" :key="token.id">
+            <img class="w-5 mx-2" :src="token.icon" :alt="token.name">
+            <div class="mx-2">{{token.name}}</div>
+            <div class="mx-2" v-if="token.amount">{{token.amount}} Lamports</div>
+          </div>
+        </div>
       </b-container>
+      
+
 
       <!--
       <div>
@@ -52,12 +61,23 @@
 <script>
 import { Connection, SystemProgram, Transaction, clusterApiUrl, PublicKey } from '@solana/web3.js';
 //console.log('DB pubkey: ' + this.manPubKey);
+import {tokenAccountByOwner, extractMintAccounts} from '../functions/connection'
+import { returnToken } from '../functions/tokenList'
+
 import { mapState } from 'vuex'
 export default {
+  data() {
+    return {
+      walletBalance: this.walletBalance,
+      lamports: this.lamports,
+      isExecutable: this.isExecutable,
+      walletTokens: []
+    };
+  },
   computed: mapState({
     pubKey: state => new PublicKey(state.publicKey.pubKey) 
   }),
-  mounted(){
+  async mounted(){
     //console.log(this.pubKey.toBase58());
     let self = this;
 
@@ -83,14 +103,21 @@ export default {
         self.lamports = accountInfo.lamports;
         
     })
+
+    const tokenAccounts = await tokenAccountByOwner(_key.toBase58())
+    const mintAccounts = await extractMintAccounts(tokenAccounts)
+    mintAccounts.forEach(_token => {
+      let tokenInfo = returnToken(_token.mint.toBase58())
+      self.walletTokens.push({
+        icon: tokenInfo.logoURI || null,
+        amount: _token.amount,
+        name: tokenInfo.name,
+        address: tokenInfo.address
+      })
+    })
+    
   },
-  data() {
-    return {
-      walletBalance: this.walletBalance,
-      lamports: this.lamports,
-      isExecutable: this.isExecutable,
-    };
-  },
+  
   methods:{
     /*
     disconnect() {

@@ -1,5 +1,5 @@
 import * as BufferLayout from 'buffer-layout';
-import { Connection, SystemProgram, Transaction, clusterApiUrl, PublicKey, TokenAccountsFilter } from '@solana/web3.js';
+import {PublicKey} from '@solana/web3.js';
 
 export const ACCOUNT_LAYOUT = BufferLayout.struct([
   BufferLayout.blob(32, 'mint'),
