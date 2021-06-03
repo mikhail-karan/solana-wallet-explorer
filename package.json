@@ -12,6 +12,8 @@
     "@project-serum/sol-wallet-adapter": "^0.2.0",
     "@solana/spl-token-registry": "^0.2.116",
     "@solana/web3.js": "^1.14.0",
+    "axios": "^0.21.1",
+    "buffer-layout": "^1.2.1",
     "bootstrap-vue": "^2.21.2",
     "core-js": "^3.9.1",
     "nuxt": "^2.15.3"

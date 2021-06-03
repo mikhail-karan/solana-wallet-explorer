@@ -6,6 +6,16 @@
   </div>
 </template>
 
+<script>
+import { getTokenList } from '../functions/tokenList'
+export default {
+  mounted() {
+    getTokenList()
+  }
+}
+</script>
+
+
 <style>
 html {
   font-family:
