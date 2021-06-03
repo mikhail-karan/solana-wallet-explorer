@@ -26,7 +26,14 @@
 import { Connection, SystemProgram, Transaction, clusterApiUrl, PublicKey, TokenAccountsFilter } from '@solana/web3.js';
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
 import Wallet from '@project-serum/sol-wallet-adapter';
+import * as BufferLayout from 'buffer-layout';
 import axios from 'axios'
+export const ACCOUNT_LAYOUT = BufferLayout.struct([
+  BufferLayout.blob(32, 'mint'),
+  BufferLayout.blob(32, 'owner'),
+  BufferLayout.nu64('amount'),
+  BufferLayout.blob(93),
+]);
 export default {
   data(){
     return {
@@ -36,6 +43,14 @@ export default {
     }
   },
   methods: {
+    parseTokenAccountData(data) {
+      let { mint, owner, amount } = ACCOUNT_LAYOUT.decode(data);
+      return {
+        mint: new PublicKey(mint),
+        owner: new PublicKey(owner),
+        amount,
+      };
+    },
     connectWallet(){
 
       const network = clusterApiUrl('mainnet-beta')
@@ -56,21 +71,36 @@ export default {
 
 
         //JSON RPC Test
-        const networkUrl = 'https://api.mainnet-beta.solana.com'
-        axios.post(networkUrl, {
-          jsonrpc: '2.0',
-          id: 1,
-          method: 'getTokenAccountsByOwner',
-          params: [publicKey.toBase58(),
-            {
-              "mint": 'z3dn17yLaGMKffVogeFHQ9zWVcXgqgf3PQnDsNs2g6M'
-            }
-          ]
+        // const networkUrl = 'https://api.mainnet-beta.solana.com'
+        // axios.post(networkUrl, {
+        //   jsonrpc: '2.0',
+        //   id: 1,
+        //   method: 'getTokenAccountsByOwner',
+        //   params: [publicKey.toBase58(),
+        //     {
+        //       "programId": 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+        //       // "mint": "BmLbrYtcWneUY2dYjerwTVoCwVvEbvEBuNqtEz5DRveg"
+        //     }
+        //   ]
+        // })
+        // .then(res => {
+        //   console.log(res)
+        //   debugger
+        //   let {mint, owner, amount} = this.parseTokenAccountData(res.data.result.value[0].account.data)
+        //   console.log('mint : ', mint) //Array
+        // })
+
+        connection.getTokenAccountsByOwner(publicKey, {
+          // mint: _pubMint,
+          programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
         })
         .then(res => {
-          console.log(res)
-          res.data.result.value //Array
-        })
+        console.log(res)
+        debugger
+        let {mint, owner, amount} = this.parseTokenAccountData(res.value[0].account.data)
+        console.log('mint : ', mint.toBase58()) //Array
+      })
+        
         
     
          console.log('Connected to ' + publicKey.toBase58())
