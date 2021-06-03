@@ -1,64 +1,143 @@
 <template>
   <div class="container">
     <div>
-      <Logo />
-      <h1 class="title">
-        solana-nuxt
-      </h1>
+      <!-- Logo / -->
+      <h4 class="subtitle">
+        Manage your Solana assets and liabilities in one simple interface
+      </h4>
+      <br>
+      <b-container fluid="md">
+        <b-row>
+            <b-col>
+              <div v-if="!walletPubkey">
+                <input type="text"               
+                  v-on:keyup.enter="connectWalletFromPubKey" 
+                  v-model="manPubKey"            
+                />
+                &nbsp;&nbsp;
+                <button             
+                  class="button--green"
+                  @click="connectWalletFromPubKey"
+                  >
+                  Let's Go!
+                </button>  
+
+              </div> 
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col class="m-3">
+              -- OR --
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
+              <button
+                v-if="!walletPubkey"
+                class="button--green"
+                @click="connectWallet"
+              >
+                Connect Wallet
+              </button>
+            </b-col>
+        </b-row>
+      </b-container>
+
+      <!--
       <div class="links">
-        <button
-          v-if="!walletPubkey"
-          class="button--green"
-          @click="connectWallet"
-        >
-          Connect
-        </button>
+        
         <div v-else>
           Public Key: {{walletPubkey.toBase58()}} <br>
           Balance: {{balance}}
         </div>
+        <br>
+        <br>
+
+        <NuxtLink to="dashboard" v-if="walletPubkey">
+          Go!
+        </NuxtLink>        
       </div>
+      -->
     </div>
   </div>
 </template>
 
 <script>
-import { Connection, SystemProgram, Transaction, clusterApiUrl, PublicKey, TokenAccountsFilter } from '@solana/web3.js';
+import { Connection, SystemProgram, Transaction, clusterApiUrl, PublicKey } from '@solana/web3.js';
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
 import Wallet from '@project-serum/sol-wallet-adapter';
-import * as BufferLayout from 'buffer-layout';
-import axios from 'axios'
-export const ACCOUNT_LAYOUT = BufferLayout.struct([
-  BufferLayout.blob(32, 'mint'),
-  BufferLayout.blob(32, 'owner'),
-  BufferLayout.nu64('amount'),
-  BufferLayout.blob(93),
-]);
-export default {
+import { mapState } from 'vuex';
+export default {  
   data(){
     return {
-      walletPubkey: null,
+      //walletPubkey: null,
       balance: '',
-      tokenWalletAccounts: []
+      manPubKey: '2HQmxjk3i2y9RBDzw4CtXwMDt2YPDrNZYLdBxJ2ouD5Y'
     }
   },
+  computed: mapState({
+    //walletPubkey: state => new PublicKey(state.publicKey.pubKey) 
+     walletPubkey: state => {
+        if ( state.publicKey.pubKey ) {
+            return new PublicKey(state.publicKey.pubKey) 
+        } else {
+            return null
+        }
+    }
+  }),
+  mounted(){        
+        if ( this.walletPubkey ) {
+          this.$router.push('dashboard');
+          return;
+        }
+  },
   methods: {
-    parseTokenAccountData(data) {
-      let { mint, owner, amount } = ACCOUNT_LAYOUT.decode(data);
-      return {
-        mint: new PublicKey(mint),
-        owner: new PublicKey(owner),
-        amount,
-      };
+
+    connectWalletFromPubKey() {
+
+
+
+        console.log('pubkey: ' + this.manPubKey);
+
+        const network = clusterApiUrl('mainnet-beta')
+        const connection = new Connection(network)
+        const _key = new PublicKey(this.manPubKey)
+        connection.getBalance(_key).then(function (balResp) {
+            console.log(balResp)
+        })
+
+        let self = this;
+        connection.getAccountInfo(_key).then(function (accountInfo) {
+            //debugger
+            console.log('Account Info: ' + accountInfo)
+            self.walletPubkey = _key;
+            self.$store.commit('publicKey/setKey', _key.toBase58());
+            self.$router.push('dashboard')
+        })
+
+        /*
+       var mintKey = new PublicKey('SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt');
+        
+        var _params = {
+          mint: mintKey
+        };
+               
+        connection.getTokenAccountsByOwner(_key, _params).then(function (tokenAccounts) {
+            //debugger
+            console.log('Token Accounts: ' + tokenAccounts)
+        })
+        */
+              
+
     },
+
     connectWallet(){
 
       const network = clusterApiUrl('mainnet-beta')
       const providerUrl = 'https://www.sollet.io'
       const connection = new Connection(network)
       let selectedWallet = new Wallet(providerUrl)
-
-
+      let self = this
       selectedWallet.on('connect', publicKey =>{
         this.walletPubkey = publicKey
         connection.getBalance(publicKey)
@@ -105,6 +184,7 @@ export default {
     
          console.log('Connected to ' + publicKey.toBase58())
          console.log(selectedWallet)
+         self.$store.commit('publicKey/setKey', publicKey.toBase58())
 
          new TokenListProvider().resolve().then(tokens => {
         const tokenList = tokens.filterByClusterSlug('mainnet-beta').getList();
@@ -170,13 +250,20 @@ export default {
 
 .subtitle {
   font-weight: 300;
-  font-size: 42px;
+  font-size: 30px;
   color: #526488;
   word-spacing: 5px;
   padding-bottom: 15px;
+  text-align: left;
 }
 
 .links {
   padding-top: 15px;
+}
+
+input {
+  border:1px solid gray;
+  min-width:450px;
+  padding:5px;
 }
 </style>
