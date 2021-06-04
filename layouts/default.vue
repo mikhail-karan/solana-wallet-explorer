@@ -10,9 +10,14 @@
 import { getTokenList } from '../functions/tokenList'
 export default {
   mounted() {
+    //init local storage
+    const _pubKey = localStorage.getItem('pubKey')
+    if (_pubKey){
+      this.$store.commit('setKey', _pubKey)
+    }
     console.log('master mounted');
-    let _pubKey = this.$auth.$storage.getUniversal('pubKey');
-    console.log('master: pubKey from storage ' + _pubKey);
+    // let _pubKey = this.$auth.$storage.getUniversal('pubKey');
+    // console.log('master: pubKey from storage ' + _pubKey);
     getTokenList()
   }
 }

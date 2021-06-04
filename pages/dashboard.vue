@@ -47,11 +47,12 @@ export default {
   computed: {
     pubKey() {
       //return new PublicKey(this.$store.getters['publicKey/getPubKey']) || null
-      if ( this.$auth.$storage.getState('pubKey') ) {
-        return new PublicKey(this.$auth.$storage.getState('pubKey')) 
-      } else {
-        return null
-      }
+      // if ( this.$auth.$storage.getState('pubKey') ) {
+      //   return new PublicKey(this.$auth.$storage.getState('pubKey')) 
+      // } else {
+      //   return null
+      // }
+      return this.$store.getters.getPubKey
     }
   },
   /*
@@ -83,13 +84,15 @@ export default {
 
     const network = clusterApiUrl('mainnet-beta')
     const connection = new Connection(network)
+
+    console.log('dashboard Key: ', this.pubKey)
     
     const walletBalance = ''
     const isExecutable = ''
     const lamports = ''
     
     
-    const _key = this.pubKey;
+    const _key = new PublicKey(this.pubKey) ;
     connection.getBalance(_key).then(function (balResp) {
         console.log(balResp)
         self.walletBalance = balResp;

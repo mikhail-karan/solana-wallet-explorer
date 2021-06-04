@@ -9,7 +9,7 @@
       <b-container fluid="md">
         <b-row>
             <b-col>
-              <div v-if="!walletPubkey">
+              <div v-if="!pubKeyInit">
                 <input type="text"               
                   v-on:keyup.enter="connectWalletFromPubKey" 
                   v-model="manPubKey"            
@@ -33,7 +33,7 @@
         <b-row>
             <b-col>
               <button
-                v-if="!walletPubkey"
+                v-if="!pubKeyInit"
                 class="button--green"
                 @click="connectWallet"
               >
@@ -70,35 +70,18 @@ import { mapState } from 'vuex';
 export default {  
   data(){
     return {
-      //walletPubkey: null,
+      pubKeyInit: false,
       balance: '',
       manPubKey: '2HQmxjk3i2y9RBDzw4CtXwMDt2YPDrNZYLdBxJ2ouD5Y'
     }
   },
   computed: {
-    walletPubkey() {
-      //return new PublicKey(this.$store.getters['publicKey/getPubKey']) || null
-      if ( this.$auth.$storage.getState('pubKey') ) {
-        return new PublicKey(this.$auth.$storage.getState('pubKey')) 
-      } else {
-        return null
-      }
+    walletPubKey() {
+      return this.$store.getters.getPubKey
     }
-  },  
-  /*
-  computed: mapState({
-    //walletPubkey: state => new PublicKey(state.publicKey.pubKey) 
-     walletPubkey: state => {
-        if ( state.publicKey.pubKey ) {
-            return new PublicKey(state.publicKey.pubKey) 
-        } else {
-            return null
-        }
-    }
-  }),
-  */
+  }, 
   mounted(){        
-        if ( this.walletPubkey ) {
+        if ( this.$store.getters.getPubKey ) {
           this.$router.push('dashboard');
           return;
         }
@@ -111,6 +94,7 @@ export default {
 
         const network = clusterApiUrl('mainnet-beta')
         const connection = new Connection(network)
+        
         const _key = new PublicKey(this.manPubKey)
         this.$auth.$storage.setUniversal('pubKey', _key.toBase58());
         connection.getBalance(_key).then(function (balResp) {
@@ -121,23 +105,9 @@ export default {
         connection.getAccountInfo(_key).then(function (accountInfo) {
             //debugger
             console.log('Account Info: ' + accountInfo)
-            self.walletPubkey = _key;
-            self.$store.commit('publicKey/setKey', _key.toBase58());
+            self.$store.dispatch('setKeyAction', _key.toBase58())
             self.$router.push('dashboard')
         })
-
-        /*
-       var mintKey = new PublicKey('SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt');
-        
-        var _params = {
-          mint: mintKey
-        };
-               
-        connection.getTokenAccountsByOwner(_key, _params).then(function (tokenAccounts) {
-            //debugger
-            console.log('Token Accounts: ' + tokenAccounts)
-        })
-        */
               
 
     },
@@ -150,7 +120,8 @@ export default {
       let selectedWallet = new Wallet(providerUrl)
       let self = this
       selectedWallet.on('connect', publicKey =>{
-        this.walletPubkey = publicKey
+        // this.walletPubkey = publicKey
+        self.$store.dispatch('setPubKey', publicKey.toBase58())
         connection.getBalance(publicKey)
         .then(key => {
           this.balance = key
