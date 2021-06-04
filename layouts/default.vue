@@ -10,6 +10,9 @@
 import { getTokenList } from '../functions/tokenList'
 export default {
   mounted() {
+    console.log('master mounted');
+    let _pubKey = this.$auth.$storage.getUniversal('pubKey');
+    console.log('master: pubKey from storage ' + _pubKey);
     getTokenList()
   }
 }

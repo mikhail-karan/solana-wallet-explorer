@@ -34,9 +34,21 @@
 
 <script>
 import { Connection, SystemProgram, Transaction, clusterApiUrl, PublicKey } from '@solana/web3.js';
-//console.log('DB pubkey: ' + this.manPubKey);
 import { mapState } from 'vuex'
 export default {
+
+  computed: {
+    pubKey() {
+      //return new PublicKey(this.$store.getters['publicKey/getPubKey']) || null
+      //if ( this.$auth.$storage.getUniversal('pubKey') ) {
+      if ( this.$auth.$storage.getState('pubKey') ) {        
+        return new PublicKey(this.$auth.$storage.getState('pubKey')) 
+      } else {
+        return null
+      }
+    }
+  },
+  /*
   computed: mapState({
       
     //pubKey: state => new PublicKey(state.publicKey.pubKey ? state.publicKey.pubKey : null) 
@@ -50,6 +62,7 @@ export default {
     }
 
   }),
+  */
   mounted(){
     console.log('Nav mounted');
   },
@@ -57,7 +70,8 @@ export default {
 
     disconnect() {
       console.log('disconnecting...');
-      this.$store.commit('publicKey/setKey', null);
+      this.$auth.$storage.removeUniversal('pubKey');
+      //this.$store.commit('publicKey/setKey', null);
       this.$router.push('/');
     }
 

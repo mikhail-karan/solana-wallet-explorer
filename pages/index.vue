@@ -75,6 +75,17 @@ export default {
       manPubKey: '2HQmxjk3i2y9RBDzw4CtXwMDt2YPDrNZYLdBxJ2ouD5Y'
     }
   },
+  computed: {
+    walletPubkey() {
+      //return new PublicKey(this.$store.getters['publicKey/getPubKey']) || null
+      if ( this.$auth.$storage.getState('pubKey') ) {
+        return new PublicKey(this.$auth.$storage.getState('pubKey')) 
+      } else {
+        return null
+      }
+    }
+  },  
+  /*
   computed: mapState({
     //walletPubkey: state => new PublicKey(state.publicKey.pubKey) 
      walletPubkey: state => {
@@ -85,6 +96,7 @@ export default {
         }
     }
   }),
+  */
   mounted(){        
         if ( this.walletPubkey ) {
           this.$router.push('dashboard');
@@ -95,13 +107,12 @@ export default {
 
     connectWalletFromPubKey() {
 
-
-
         console.log('pubkey: ' + this.manPubKey);
 
         const network = clusterApiUrl('mainnet-beta')
         const connection = new Connection(network)
         const _key = new PublicKey(this.manPubKey)
+        this.$auth.$storage.setUniversal('pubKey', _key.toBase58());
         connection.getBalance(_key).then(function (balResp) {
             console.log(balResp)
         })
