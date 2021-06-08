@@ -1,22 +1,31 @@
 <template>
-  <div>        
+  <div>
     <Navigation />
     <Nuxt />
     <Footer />
   </div>
 </template>
 
+<script>
+import { getTokenList } from "../functions/tokenList";
+export default {
+  mounted() {
+    //init local storage
+    const _pubKey = localStorage.getItem("pubKey");
+    if (_pubKey) {
+      this.$store.commit("setKey", _pubKey);
+    }
+    console.log("master mounted");
+    getTokenList();
+  },
+};
+</script>
+
+
 <style>
 html {
-  font-family:
-    'Source Sans Pro',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
+  font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: 16px;
   word-spacing: 1px;
   -ms-text-size-adjust: 100%;

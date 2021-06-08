@@ -2,131 +2,131 @@
   <div class="container">
     <div>
       <!-- Logo / -->
-      <h1 class="title">
-        solana-nuxt
-      </h1>
-      <div class="links">
-        <button
-          v-if="!walletPubkey"
-          class="button--green"
-          @click="connectWallet"
-        >
-          Connect Wallet
-        </button>        
-        <div v-else>
-          Public Key: {{walletPubkey.toBase58()}} <br>
-          Balance: {{balance}}
-        </div>
-        <br>
-        <br>
-        <div v-if="!walletPubkey">
-
-          -- OR --
-          <br>
-          <input type="text"               
-            v-on:keyup.enter="connectWalletFromPubKey" 
-            v-model="manPubKey"            
-            />
-
-
-          <button             
-            class="button--green"
-            @click="connectWalletFromPubKey"
+      <h4 class="subtitle">
+        Manage your Solana assets and liabilities in one simple interface
+      </h4>
+      <br />
+      <b-container fluid="md">
+        <b-row>
+          <b-col>
+            <div v-if="!pubKeyInit">
+              <input
+                type="text"
+                v-on:keyup.enter="connectWalletFromPubKey"
+                v-model="manPubKey"
+              />
+              &nbsp;&nbsp;
+              <button class="button--green" @click="connectWalletFromPubKey">
+                Let's Go!
+              </button>
+            </div>
+          </b-col>
+        </b-row>
+        <b-row align-h="center" v-if="pubKeyError">
+          <b-col>
+            <p>Incorrect public key</p>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col class="m-3"> -- OR -- </b-col>
+        </b-row>
+        <b-row>
+          <b-col>
+            <button
+              v-if="!pubKeyInit"
+              class="button--green"
+              @click="connectWallet"
             >
-            Let's Go!
-          </button>  
-
-        </div>
-
-        <br><br>
-        <NuxtLink to="dashboard" v-if="walletPubkey">
-          Go!
-        </NuxtLink>
-
-
-      </div>
+              Connect Wallet
+            </button>
+          </b-col>
+        </b-row>
+      </b-container>
     </div>
   </div>
 </template>
 
 <script>
-import { Connection, SystemProgram, Transaction, clusterApiUrl, PublicKey } from '@solana/web3.js';
-import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
-import Wallet from '@project-serum/sol-wallet-adapter';
+import { Connection, clusterApiUrl, PublicKey } from "@solana/web3.js";
+import Wallet from "@project-serum/sol-wallet-adapter";
 export default {
-  data(){
+  data() {
     return {
-      walletPubkey: null,
-      balance: '',
-      manPubKey: '2HQmxjk3i2y9RBDzw4CtXwMDt2YPDrNZYLdBxJ2ouD5Y'
+      pubKeyInit: false,
+      balance: "",
+      pubKeyError: false,
+      manPubKey: "2HQmxjk3i2y9RBDzw4CtXwMDt2YPDrNZYLdBxJ2ouD5Y",
+    };
+  },
+  computed: {
+    walletPubKey() {
+      return this.$store.getters.getPubKey;
+    },
+  },
+  mounted() {
+    if (this.$store.getters.getPubKey) {
+      this.$router.push("dashboard");
+      return;
     }
   },
   methods: {
+    async connectWalletFromPubKey() {
+      console.log("pubkey: " + this.manPubKey);
 
-    connectWalletFromPubKey() {
-        console.log('pubkey: ' + this.manPubKey);
+      const network = clusterApiUrl("mainnet-beta");
+      const connection = new Connection(network);
 
-        const network = clusterApiUrl('mainnet-beta')
-        const connection = new Connection(network)
-        const _key = new PublicKey(this.manPubKey)
-        connection.getBalance(_key).then(function (balResp) {
-            console.log(balResp)
-        })
+      let _key = null;
+      try {
+        _key = new PublicKey(this.manPubKey);
+      } catch (error) {
+        console.log(error);
+        this.pubKeyError = true;
+        return;
+      }
 
-        let self = this;
-        connection.getAccountInfo(_key).then(function (accountInfo) {
-            //debugger
-            console.log('Account Info: ' + accountInfo)
-            self.walletPubkey = _key;
-        })
-
-
-       var mintKey = new PublicKey('SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt');
-        
-        var _params = {
-          mint: mintKey
-        };
-               
-        connection.getTokenAccountsByOwner(_key, _params).then(function (tokenAccounts) {
-            //debugger
-            console.log('Token Accounts: ' + tokenAccounts)
-        })
-              
-
+      const accountInfo = await connection.getAccountInfo(_key).catch((e) => {
+        console.log("key doesn`t match");
+      });
+      console.log("Account Info: " + accountInfo);
+      this.$store.dispatch("setKeyAction", _key.toBase58());
+      this.$router.push("dashboard");
     },
 
-    connectWallet(){
+    async connectWallet() {
+      const providerUrl = "https://www.sollet.io";
+      let selectedWallet = new Wallet(providerUrl);
+      let self = this;
+      selectedWallet.on("connect", (publicKey) => {
+        self.$store.dispatch("setKeyAction", publicKey.toBase58());
+        this.$router.push("dashboard");
 
-      const network = clusterApiUrl('mainnet-beta')
-      const providerUrl = 'https://www.sollet.io'
-      const connection = new Connection(network)
-      let selectedWallet = new Wallet(providerUrl)
-      selectedWallet.on('connect', publicKey =>{
-        this.walletPubkey = publicKey
-        connection.getBalance(publicKey)
-        .then(key => {
-          this.balance = key
-        }
-        
-
-        )
-        connection.getProgramAccounts(publicKey).then(res => {
-          console.log('Program info: ', res)
-        }) 
-         console.log('Connected to ' + publicKey.toBase58())
-         console.log(selectedWallet)
-
-         
+        //JSON RPC Test
+        // const networkUrl = 'https://api.mainnet-beta.solana.com'
+        // axios.post(networkUrl, {
+        //   jsonrpc: '2.0',
+        //   id: 1,
+        //   method: 'getTokenAccountsByOwner',
+        //   params: [publicKey.toBase58(),
+        //     {
+        //       "programId": 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+        //       // "mint": "BmLbrYtcWneUY2dYjerwTVoCwVvEbvEBuNqtEz5DRveg"
+        //     }
+        //   ]
+        // })
+        // .then(res => {
+        //   console.log(res)
+        //   debugger
+        //   let {mint, owner, amount} = this.parseTokenAccountData(res.data.result.value[0].account.data)
+        //   console.log('mint : ', mint) //Array
+        // })
       });
-      selectedWallet.on('disconnect', () => console.log('Disconnected'));
-      new TokenListProvider().resolve().then(tokens => {
-        const tokenList = tokens.filterByClusterSlug('mainnet-beta').getList();
-        console.log('Token List: ', tokenList)
-      })
-      selectedWallet.connect()
-    }
-  }
-}
+      selectedWallet.on("disconnect", () => console.log("Disconnected"));
+
+      selectedWallet.connect();
+    },
+  },
+};
 </script>
 
 <style>
@@ -145,16 +145,8 @@ export default {
 }
 
 .title {
-  font-family:
-    'Quicksand',
-    'Source Sans Pro',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
+  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   display: block;
   font-weight: 300;
   font-size: 100px;
@@ -164,10 +156,11 @@ export default {
 
 .subtitle {
   font-weight: 300;
-  font-size: 42px;
+  font-size: 30px;
   color: #526488;
   word-spacing: 5px;
   padding-bottom: 15px;
+  text-align: left;
 }
 
 .links {
@@ -175,9 +168,8 @@ export default {
 }
 
 input {
-  border:1px solid gray;
-  margin:20px;
-  min-width:450px;
-  padding:5px;
+  border: 1px solid gray;
+  min-width: 450px;
+  padding: 5px;
 }
 </style>
