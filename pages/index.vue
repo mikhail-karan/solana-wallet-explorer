@@ -10,13 +10,14 @@
         <b-row>
             <b-col>
               <div v-if="!pubKeyInit">
-                <input type="text"               
+                <input type="text" 
+                  class="mb-3"              
                   v-on:keyup.enter="connectWalletFromPubKey" 
                   v-model="manPubKey"            
                 />
                 &nbsp;&nbsp;
-                <button             
-                  class="button--green"
+                <button
+                  class="btn btn-success"                  
                   @click="connectWalletFromPubKey"
                   >
                   Let's Go!
@@ -32,9 +33,10 @@
         </b-row>
         <b-row>
             <b-col>
-              <button
-                v-if="!pubKeyInit"
-                class="button--green"
+              <button 
+                type="button"
+                class="btn btn-success"
+                v-if="!pubKeyInit"                
                 @click="connectWallet"
               >
                 Connect Wallet
@@ -203,6 +205,11 @@ export default {
 @apply min-h-screen flex justify-center items-center text-center mx-auto;
 }
 */
+
+body {
+  background-color: #007bff;
+  color:#fff;
+}
 .container {
   margin: 0 auto;
   min-height: 100vh;
@@ -226,14 +233,14 @@ export default {
   display: block;
   font-weight: 300;
   font-size: 100px;
-  color: #35495e;
+  color:#fff;
   letter-spacing: 1px;
 }
 
 .subtitle {
   font-weight: 300;
   font-size: 30px;
-  color: #526488;
+  color: #fff;
   word-spacing: 5px;
   padding-bottom: 15px;
   text-align: left;
@@ -247,5 +254,6 @@ input {
   border:1px solid gray;
   min-width:450px;
   padding:5px;
+  color:#444;
 }
 </style>
