@@ -9,8 +9,6 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
-    "@nuxtjs/auth-next": "5.0.0-1622718665.cc99959",
-    "@nuxtjs/axios": "^5.13.6",
     "@project-serum/sol-wallet-adapter": "^0.2.0",
     "@solana/spl-token-registry": "^0.2.116",
     "@solana/web3.js": "^1.14.0",

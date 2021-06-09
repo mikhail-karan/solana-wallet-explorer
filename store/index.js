@@ -17,7 +17,6 @@ export const actions = {
 
 
 export const getters = {
-
   getPubKey: state => {
    return state.pubKey
   }
