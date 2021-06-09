@@ -8,38 +8,38 @@
       <br />
       <b-container fluid="md">
         <b-row>
-          <b-col>
-            <div v-if="!pubKeyInit">
-              <input
-                type="text"
-                v-on:keyup.enter="connectWalletFromPubKey"
-                v-model="manPubKey"
-              />
-              &nbsp;&nbsp;
-              <button class="button--green" @click="connectWalletFromPubKey">
-                Let's Go!
-              </button>
-            </div>
-          </b-col>
-        </b-row>
-        <b-row align-h="center" v-if="pubKeyError">
-          <b-col>
-            <p>Incorrect public key</p>
-          </b-col>
+            <b-col>
+              <div v-if="!pubKeyInit">
+                <input type="text" 
+                  class="mb-3"              
+                  v-on:keyup.enter="connectWalletFromPubKey" 
+                  v-model="manPubKey"            
+                />
+                &nbsp;&nbsp;
+                <button
+                  class="btn btn-success"                  
+                  @click="connectWalletFromPubKey"
+                  >
+                  Let's Go!
+                </button>  
+
+              </div> 
+            </b-col>
         </b-row>
         <b-row>
           <b-col class="m-3"> -- OR -- </b-col>
         </b-row>
         <b-row>
-          <b-col>
-            <button
-              v-if="!pubKeyInit"
-              class="button--green"
-              @click="connectWallet"
-            >
-              Connect Wallet
-            </button>
-          </b-col>
+            <b-col>
+              <button 
+                type="button"
+                class="btn btn-success"
+                v-if="!pubKeyInit"                
+                @click="connectWallet"
+              >
+                Connect Wallet
+              </button>
+            </b-col>
         </b-row>
       </b-container>
     </div>
@@ -57,6 +57,10 @@ export default {
       pubKeyError: false,
       manPubKey: "2HQmxjk3i2y9RBDzw4CtXwMDt2YPDrNZYLdBxJ2ouD5Y",
     };
+  },
+  created() {
+    console.log('index created');
+    //this.$root.$refs.index = this;
   },
   computed: {
     walletPubKey() {
@@ -135,6 +139,8 @@ export default {
 @apply min-h-screen flex justify-center items-center text-center mx-auto;
 }
 */
+
+
 .container {
   margin: 0 auto;
   min-height: 100vh;
@@ -150,14 +156,14 @@ export default {
   display: block;
   font-weight: 300;
   font-size: 100px;
-  color: #35495e;
+  color:#fff;
   letter-spacing: 1px;
 }
 
 .subtitle {
   font-weight: 300;
   font-size: 30px;
-  color: #526488;
+  color: #fff;
   word-spacing: 5px;
   padding-bottom: 15px;
   text-align: left;
@@ -167,9 +173,9 @@ export default {
   padding-top: 15px;
 }
 
-input {
-  border: 1px solid gray;
-  min-width: 450px;
-  padding: 5px;
+input {  
+  min-width:450px;
+  padding:5px;
+  color:#444;
 }
 </style>

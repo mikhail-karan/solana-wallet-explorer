@@ -3,7 +3,7 @@
         <footer class="page-footer font-small blue" align-v="baseline">
 
           <!-- Copyright -->
-          <div class="footer-copyright text-center py-3">© 2021 Copyright
+          <div class="footer-copyright text-center py-3">
             <!-- a href="https://mdbootstrap.com/"> MDBootstrap.com</a -->
           </div>
           <!-- Copyright -->
