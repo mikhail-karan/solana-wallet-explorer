@@ -17,7 +17,7 @@
             <!-- Right aligned nav items -->
             <b-navbar-nav class="ml-auto">
 
-                <b-nav-item href="#" v-if="pubKey" disabled>{{pubKey}}</b-nav-item>
+                <!-- b-nav-item href="#" v-if="pubKey" disabled>{{pubKey}}</b-nav-item -->
                 <b-nav-item-dropdown right>
                 <!-- Using 'button-content' slot -->
                 <template #button-content>
@@ -25,6 +25,7 @@
                 </template>
                 <!-- b-dropdown-item href="#">Profile</b-dropdown-item -->
                 <b-dropdown-item href="#" v-if="!pubKey" @click="connect()">Connect Wallet</b-dropdown-item>
+                <b-dropdown-item href="#" v-if="pubKey" disabled>{{pubKey}}</b-dropdown-item>
                 <b-dropdown-item href="#" v-if="pubKey" @click="disconnect()">Disconnect</b-dropdown-item>
                 </b-nav-item-dropdown>
             </b-navbar-nav>
