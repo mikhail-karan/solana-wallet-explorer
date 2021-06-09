@@ -58,6 +58,10 @@ export default {
       manPubKey: "2HQmxjk3i2y9RBDzw4CtXwMDt2YPDrNZYLdBxJ2ouD5Y",
     };
   },
+  created() {
+    console.log('index created');
+    //this.$root.$refs.index = this;
+  },
   computed: {
     walletPubKey() {
       return this.$store.getters.getPubKey;
@@ -136,10 +140,7 @@ export default {
 }
 */
 
-body {
-  background-color: #007bff;
-  color:#fff;
-}
+
 .container {
   margin: 0 auto;
   min-height: 100vh;
@@ -172,8 +173,7 @@ body {
   padding-top: 15px;
 }
 
-input {
-  border:1px solid gray;
+input {  
   min-width:450px;
   padding:5px;
   color:#444;

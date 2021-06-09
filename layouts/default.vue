@@ -35,6 +35,10 @@ html {
   box-sizing: border-box;
 }
 
+body {
+  background-image: url('../assets/sky_bg.jpg');
+}
+
 *,
 *::before,
 *::after {
