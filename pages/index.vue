@@ -8,38 +8,35 @@
       <br />
       <b-container fluid="md">
         <b-row>
-            <b-col>
-              <div v-if="!pubKeyInit">
-                <input type="text" 
-                  class="mb-3"              
-                  v-on:keyup.enter="connectWalletFromPubKey" 
-                  v-model="manPubKey"            
-                />
-                &nbsp;&nbsp;
-                <button
-                  class="btn btn-success"                  
-                  @click="connectWalletFromPubKey"
-                  >
-                  Let's Go!
-                </button>  
-
-              </div> 
-            </b-col>
+          <b-col>
+            <div v-if="!pubKeyInit">
+              <input
+                type="text"
+                class="mb-3"
+                v-on:keyup.enter="connectWalletFromPubKey"
+                v-model="manPubKey"
+              />
+              &nbsp;&nbsp;
+              <button class="btn btn-success" @click="connectWalletFromPubKey">
+                Let's Go!
+              </button>
+            </div>
+          </b-col>
         </b-row>
         <b-row>
           <b-col class="m-3"> -- OR -- </b-col>
         </b-row>
         <b-row>
-            <b-col>
-              <button 
-                type="button"
-                class="btn btn-success"
-                v-if="!pubKeyInit"                
-                @click="connectWallet"
-              >
-                Connect Wallet
-              </button>
-            </b-col>
+          <b-col>
+            <button
+              type="button"
+              class="btn btn-success"
+              v-if="!pubKeyInit"
+              @click="connectWallet"
+            >
+              Connect Wallet
+            </button>
+          </b-col>
         </b-row>
       </b-container>
     </div>
@@ -48,7 +45,7 @@
 
 <script>
 import { Connection, clusterApiUrl, PublicKey } from "@solana/web3.js";
-import {connectWallet} from "../utils/connection"
+import { connectWallet, connectWalletFromPubKey } from "../utils/connection";
 export default {
   data() {
     return {
@@ -59,7 +56,7 @@ export default {
     };
   },
   created() {
-    console.log('index created');
+    console.log("index created");
     //this.$root.$refs.index = this;
   },
   computed: {
@@ -75,6 +72,7 @@ export default {
   },
   methods: {
     async connectWalletFromPubKey() {
+      /*
       console.log("pubkey: " + this.manPubKey);
 
       const network = clusterApiUrl("mainnet-beta");
@@ -94,14 +92,19 @@ export default {
       console.log("Account Info: " + accountInfo);
       this.$store.dispatch("setKeyAction", _key.toBase58());
       this.$router.push("dashboard");
+      */
+
+      let _pubKey = await connectWalletFromPubKey(this.manPubKey);
+      this.$store.dispatch("setKeyAction", _pubKey);
+      this.$router.push("dashboard");
     },
-    async connectWallet(){
-      let _pubKey = await connectWallet()
-      if (_pubKey){
+    async connectWallet() {
+      let _pubKey = await connectWallet();
+      if (_pubKey) {
         this.$store.dispatch("setKeyAction", _pubKey.toBase58());
         this.$router.push("dashboard");
       }
-    }
+    },
   },
 };
 </script>
@@ -112,7 +115,6 @@ export default {
 @apply min-h-screen flex justify-center items-center text-center mx-auto;
 }
 */
-
 
 .container {
   margin: 0 auto;
@@ -129,7 +131,7 @@ export default {
   display: block;
   font-weight: 300;
   font-size: 100px;
-  color:#fff;
+  color: #fff;
   letter-spacing: 1px;
 }
 
@@ -146,9 +148,9 @@ export default {
   padding-top: 15px;
 }
 
-input {  
-  min-width:450px;
-  padding:5px;
-  color:#444;
+input {
+  min-width: 450px;
+  padding: 5px;
+  color: #444;
 }
 </style>

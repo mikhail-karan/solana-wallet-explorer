@@ -1,10 +1,10 @@
-import { Connection,clusterApiUrl, PublicKey} from '@solana/web3.js';
-import {parseTokenAccountData} from './utility'
+import { Connection, clusterApiUrl, PublicKey } from '@solana/web3.js';
+import { parseTokenAccountData } from './utility'
 import Wallet from "@project-serum/sol-wallet-adapter";
 
 export const SOL_PROGRAM_TOKEN = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
 
-export function establishConnection(){
+export function establishConnection() {
   const network = clusterApiUrl('mainnet-beta')
   const connection = new Connection(network)
   return connection
@@ -19,10 +19,10 @@ export async function tokenAccountByOwner(_publicKey) {
 
 }
 
-export async function extractMintAccounts(tokenAccounts){ //pass in token accounts array []
+export async function extractMintAccounts(tokenAccounts) { //pass in token accounts array []
   let mintAccounts = []
   tokenAccounts.forEach(acc => {
-    const {mint, owner, amount} = parseTokenAccountData(acc.account.data)
+    const { mint, owner, amount } = parseTokenAccountData(acc.account.data)
     mintAccounts.push({
       mint,
       owner,
@@ -43,5 +43,29 @@ export async function connectWallet() {
 
     selectedWallet.connect();
   })
-  
+
+}
+
+export async function connectWalletFromPubKey(pubKey) {
+
+  console.log("Utils - pubkey: " + pubKey);
+
+  const network = clusterApiUrl("mainnet-beta");
+  const connection = new Connection(network);
+
+  let _key = null;
+  try {
+    _key = new PublicKey(pubKey);
+  } catch (error) {
+    console.log(error);
+    //this.pubKeyError = true;
+    return 'ERROR - failed to connect from pubkey';
+  }
+  const accountInfo = await connection.getAccountInfo(_key).catch((e) => {
+    console.log("key doesn`t match");
+  });
+  console.log("Account Info: " + accountInfo);
+  //this.$store.dispatch("setKeyAction", _key.toBase58());
+  //this.$router.push("dashboard");
+  return _key.toBase58();
 }
