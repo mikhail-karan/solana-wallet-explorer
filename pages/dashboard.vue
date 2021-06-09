@@ -22,6 +22,9 @@
           <div class="mx-2" v-if="token.amount">
             {{ token.amount }} Lamports
           </div>
+          <div class="mx-2" v-if="token.price">
+            ${{ token.price }}
+          </div>
         </div>
       </div>
     </b-container>
@@ -33,8 +36,9 @@ import { Connection, clusterApiUrl, PublicKey } from "@solana/web3.js";
 import {
   tokenAccountByOwner,
   extractMintAccounts,
-} from "../functions/connection";
-import { returnToken } from "../functions/tokenList";
+} from "../utils/connection";
+import {serumMarkets, priceStore} from "../utils/markets.ts"
+import { returnToken } from "../utils/tokenList";
 export default {
   data() {
     return {
@@ -77,11 +81,31 @@ export default {
     const mintAccounts = await extractMintAccounts(tokenAccounts);
     mintAccounts.forEach((_token) => {
       let tokenInfo = returnToken(_token.mint.toBase58());
+      const tokenSymbol = tokenInfo.symbol
+      let sMarket = serumMarkets[tokenSymbol]
+      let price = null
+      if (sMarket){
+        priceStore.getPrice(sMarket.name)
+        .then((returnPrice) => {
+          const token = self.walletTokens.find(tok => {
+            return tok.marketName === returnPrice.name
+          })
+          if (token){
+            token.price = (token.amount/(Math.pow(10,token.decimals)))*returnPrice.price
+          }
+          
+        })
+      }
+      
       self.walletTokens.push({
         icon: tokenInfo.logoURI || null,
         amount: _token.amount,
         name: tokenInfo.name,
         address: tokenInfo.address,
+        symbol: tokenInfo.symbol,
+        marketName: sMarket?.name || null,
+        decimals: tokenInfo.decimals,
+        price: price
       });
     });
   },

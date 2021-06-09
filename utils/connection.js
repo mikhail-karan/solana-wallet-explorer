@@ -1,5 +1,6 @@
-import { Connection, SystemProgram, Transaction, clusterApiUrl, PublicKey, TokenAccountsFilter } from '@solana/web3.js';
+import { Connection,clusterApiUrl, PublicKey} from '@solana/web3.js';
 import {parseTokenAccountData} from './utility'
+import Wallet from "@project-serum/sol-wallet-adapter";
 
 export const SOL_PROGRAM_TOKEN = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
 
@@ -29,4 +30,18 @@ export async function extractMintAccounts(tokenAccounts){ //pass in token accoun
     })
   })
   return mintAccounts
+}
+
+export async function connectWallet() {
+  return new Promise((resolve, reject) => {
+    const providerUrl = "https://www.sollet.io";
+    let selectedWallet = new Wallet(providerUrl);
+    selectedWallet.on("connect", (publicKey) => {
+      resolve(publicKey)
+    });
+    selectedWallet.on("disconnect", () => console.log("Disconnected"));
+
+    selectedWallet.connect();
+  })
+  
 }

@@ -48,7 +48,7 @@
 
 <script>
 import { Connection, clusterApiUrl, PublicKey } from "@solana/web3.js";
-import Wallet from "@project-serum/sol-wallet-adapter";
+import {connectWallet} from "../utils/connection"
 export default {
   data() {
     return {
@@ -88,7 +88,6 @@ export default {
         this.pubKeyError = true;
         return;
       }
-
       const accountInfo = await connection.getAccountInfo(_key).catch((e) => {
         console.log("key doesn`t match");
       });
@@ -96,39 +95,13 @@ export default {
       this.$store.dispatch("setKeyAction", _key.toBase58());
       this.$router.push("dashboard");
     },
-
-    async connectWallet() {
-      const providerUrl = "https://www.sollet.io";
-      let selectedWallet = new Wallet(providerUrl);
-      let self = this;
-      selectedWallet.on("connect", (publicKey) => {
-        self.$store.dispatch("setKeyAction", publicKey.toBase58());
+    async connectWallet(){
+      let _pubKey = await connectWallet()
+      if (_pubKey){
+        this.$store.dispatch("setKeyAction", _pubKey.toBase58());
         this.$router.push("dashboard");
-
-        //JSON RPC Test
-        // const networkUrl = 'https://api.mainnet-beta.solana.com'
-        // axios.post(networkUrl, {
-        //   jsonrpc: '2.0',
-        //   id: 1,
-        //   method: 'getTokenAccountsByOwner',
-        //   params: [publicKey.toBase58(),
-        //     {
-        //       "programId": 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-        //       // "mint": "BmLbrYtcWneUY2dYjerwTVoCwVvEbvEBuNqtEz5DRveg"
-        //     }
-        //   ]
-        // })
-        // .then(res => {
-        //   console.log(res)
-        //   debugger
-        //   let {mint, owner, amount} = this.parseTokenAccountData(res.data.result.value[0].account.data)
-        //   console.log('mint : ', mint) //Array
-        // })
-      });
-      selectedWallet.on("disconnect", () => console.log("Disconnected"));
-
-      selectedWallet.connect();
-    },
+      }
+    }
   },
 };
 </script>
