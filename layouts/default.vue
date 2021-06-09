@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { getTokenList } from "../functions/tokenList";
+import { getTokenList } from "../utils/tokenList";
 export default {
   mounted() {
     //init local storage
