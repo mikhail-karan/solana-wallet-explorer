@@ -37,6 +37,7 @@
 <script>
 import { Connection, SystemProgram, Transaction, clusterApiUrl, PublicKey } from '@solana/web3.js';
 import { mapState } from 'vuex'
+import { connectWallet} from "../utils/connection";
 export default {
   data() {
     return {
@@ -89,8 +90,13 @@ export default {
       this.$router.push('/');
     },
 
-    connect() {
-      this.$root.$refs.index.connectWallet();
+    async connect() {
+      //this.$root.$refs.index.connectWallet();
+      let _pubKey = await connectWallet();
+      if (_pubKey) {
+        this.$store.dispatch("setKeyAction", _pubKey.toBase58());
+        this.$router.push("dashboard");
+      }
     }
 
   }
