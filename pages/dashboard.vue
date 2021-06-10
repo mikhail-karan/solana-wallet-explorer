@@ -45,6 +45,7 @@ export default {
       solLamports: 0,
       isExecutable: false,
       walletTokens: [],
+      sol: {}
     };
   },
   computed: {
@@ -69,16 +70,40 @@ export default {
 
     //Get solana Account Info
     connection.getAccountInfo(_key).then(function (accountInfo) {
-      //debugger
       console.log("Account Info: " + accountInfo);
 
       self.isExecutable = accountInfo.executable;
       self.solLamports = accountInfo.lamports;
     });
-
+    console.log('sol balance: ', this.sol)
     //Get mint tokens assosiated with Solana Account
     const tokenAccounts = await tokenAccountByOwner(_key.toBase58());
     const mintAccounts = await extractMintAccounts(tokenAccounts);
+
+    const solTokenInfo = returnToken('SOL')
+    const solMarket = serumMarkets['SOL']
+    let solToken = {
+      icon: solTokenInfo.logoURI || null,
+      amount: this.solLamports,
+      name: 'SOL',
+      address: solTokenInfo.address,
+      symbol: solTokenInfo.symbol,
+      marketName: solMarket?.name || null,
+      decimals: solTokenInfo.decimals,
+      price: null
+    }
+    this.walletTokens.push(solToken)
+    priceStore.getPrice(solMarket.name)
+    .then((returnPrice)=> {
+      const token = self.walletTokens.find(tok => {
+        return tok.marketName === returnPrice.name
+      })
+      if (token){
+        token.price = Math.round(((token.amount/(Math.pow(10,token.decimals)))*returnPrice.price) * 100)/100 
+      }
+    })
+    
+
     mintAccounts.forEach((_token) => {
       let tokenInfo = returnToken(_token.mint.toBase58());
       const tokenSymbol = tokenInfo.symbol
@@ -91,7 +116,7 @@ export default {
             return tok.marketName === returnPrice.name
           })
           if (token){
-            token.price = (token.amount/(Math.pow(10,token.decimals)))*returnPrice.price
+            token.price = Math.round(((token.amount/(Math.pow(10,token.decimals)))*returnPrice.price) * 100)/100 
           }
           
         })
