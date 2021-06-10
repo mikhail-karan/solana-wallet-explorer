@@ -3,7 +3,7 @@
     <b-container>
       <div>
         <b-row class="mb-3">
-          <b-col class="text-left"><h1>Net Worth</h1></b-col>
+          <b-col class="text-left"><h1>Wallet</h1></b-col>
           <b-col class="text-right">$XYZ.ZZ</b-col>
         </b-row>
 
@@ -11,10 +11,24 @@
           <b-col
             ><img class="w-5 mx-2" :src="token.icon" :alt="token.name"
           /></b-col>
+          <b-col class="text-left">TOKEN_SYMBOL</b-col>
           <b-col cols="5" class="text-left">{{ token.name }}</b-col>
           <b-col>${{ token.price }}</b-col>
         </b-row>
+
+        <b-row class="my-3">
+          <b-col class="text-left"><h1>Staking Positions</h1></b-col>
+          <b-col class="text-right">$XYZ.ZZ</b-col>
+        </b-row>
+        <b-row class="snl-padded">
+          <b-col
+            >Raydium</b-col>
+          <b-col cols="5" class="text-left">OXY / RAY</b-col>
+          <b-col>$199.99</b-col>
+        </b-row>
+
       </div>
+
       <!--
       <div class="flex flex-col snl-padded">
         <div
@@ -158,7 +172,7 @@ export default {
   text-align: left;
 }
 
-#wallet-table td {  
+#wallet-table td {
   word-wrap: break-word;
   word-break: break-all;
 }
