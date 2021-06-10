@@ -1,70 +1,80 @@
 <template>
-    <div>
-        <b-navbar toggleable="lg" type="light" variant="light">
-            <b-navbar-brand href="" @click="$router.push('/')">Solana Wallet Explorer</b-navbar-brand>
+  <div>
+    <b-navbar toggleable="lg" type="lignt" variant="dark">
+      <b-navbar-brand href="" @click="$router.push('/')"
+        >Solana Portfolio Dashboard</b-navbar-brand
+      >
 
-            <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
-            <b-collapse id="nav-collapse" is-nav>
-            
-            <!--
+      <b-collapse id="nav-collapse" is-nav>
+        <!--
             <b-navbar-nav>
                 <b-nav-item href="#">Link</b-nav-item>
                 <b-nav-item href="#" disabled>{{pubKey}}}</b-nav-item>
             </b-navbar-nav>
             -->
-            
-            <!-- Right aligned nav items -->
-            <b-navbar-nav class="ml-auto">
 
-                <!-- b-nav-item href="#" v-if="pubKey" disabled>{{pubKey}}</b-nav-item -->
-                <b-nav-item-dropdown right>
-                <!-- Using 'button-content' slot -->
-                <template #button-content>
-                    <em>User</em>
-                </template>
-                <!-- b-dropdown-item href="#">Profile</b-dropdown-item -->
-                <b-dropdown-item href="#" v-if="!pubKey" @click="connect()">Connect Wallet</b-dropdown-item>
-                <b-dropdown-item href="#" v-if="pubKey" disabled>{{pubKey}}</b-dropdown-item>
-                <b-dropdown-item href="#" v-if="pubKey" @click="disconnect()">Disconnect</b-dropdown-item>
-                </b-nav-item-dropdown>
-            </b-navbar-nav>
-            </b-collapse>
-        </b-navbar>
-    </div>
+        <!-- Right aligned nav items -->
+        <b-navbar-nav class="ml-auto">
+          <!-- b-nav-item href="#" v-if="pubKey" disabled>{{pubKey}}</b-nav-item -->
+          <b-nav-item-dropdown right>
+            <!-- Using 'button-content' slot -->
+            <template #button-content> Account </template>
+            <!-- b-dropdown-item href="#">Profile</b-dropdown-item -->
+            <b-dropdown-item href="#" v-if="!pubKey" @click="connect()"
+              >Connect Wallet</b-dropdown-item
+            >
+            <b-dropdown-item href="#" v-if="pubKey" disabled>{{
+              pubKey
+            }}</b-dropdown-item>
+            <b-dropdown-item href="#" v-if="pubKey" @click="disconnect()"
+              >Disconnect</b-dropdown-item
+            >
+          </b-nav-item-dropdown>
+        </b-navbar-nav>
+      </b-collapse>
+    </b-navbar>
+  </div>
 </template>
 
 <script>
-import { Connection, SystemProgram, Transaction, clusterApiUrl, PublicKey } from '@solana/web3.js';
-import { mapState } from 'vuex'
-import { connectWallet} from "../utils/connection";
+import {
+  Connection,
+  SystemProgram,
+  Transaction,
+  clusterApiUrl,
+  PublicKey,
+} from "@solana/web3.js";
+import { mapState } from "vuex";
+import { connectWallet } from "../utils/connection";
 export default {
   data() {
     return {
       // pubKey: null
-    }
+    };
   },
 
   computed: {
     pubKey() {
       //return new PublicKey(this.$store.getters['publicKey/getPubKey']) || null
-      
+
       //if ( this.$auth.$storage.getUniversal('pubKey') ) {
-      // if ( this.$auth.$storage.watch('pubKey') ) {        
-      //   return new PublicKey(this.$auth.$storage.getState('pubKey')) 
+      // if ( this.$auth.$storage.watch('pubKey') ) {
+      //   return new PublicKey(this.$auth.$storage.getState('pubKey'))
       // } else {
       //   return null
       // }
-      return this.$store.getters.getPubKey
-    }
+      return this.$store.getters.getPubKey;
+    },
   },
   // computed: mapState({
-      
-  //   //pubKey: state => new PublicKey(state.publicKey.pubKey ? state.publicKey.pubKey : null) 
-    
+
+  //   //pubKey: state => new PublicKey(state.publicKey.pubKey ? state.publicKey.pubKey : null)
+
   //   pubKey: state => {
   //       if ( state.publicKey.pubKey ) {
-  //           return new PublicKey(state.publicKey.pubKey) 
+  //           return new PublicKey(state.publicKey.pubKey)
   //       } else {
   //           return null
   //       }
@@ -72,22 +82,21 @@ export default {
 
   // }),
 
-  mounted(){
-    console.log('Nav mounted');
+  mounted() {
+    console.log("Nav mounted");
     // this.$auth.$storage.watchState('pubKey', newValue => {
     //     console.log('pubkey State Changed')
     //     this.pubKey = newValue
     //   })
   },
-  methods:{
-
+  methods: {
     disconnect() {
-      console.log('disconnecting...');
+      console.log("disconnecting...");
       // this.$auth.$storage.setUniversal('pubKey', null);
-      localStorage.removeItem('pubKey')
-      this.$store.commit('setKey', null)
+      localStorage.removeItem("pubKey");
+      this.$store.commit("setKey", null);
       //this.$store.commit('publicKey/setKey', null);
-      this.$router.push('/');
+      this.$router.push("/");
     },
 
     async connect() {
@@ -97,13 +106,23 @@ export default {
         this.$store.dispatch("setKeyAction", _pubKey.toBase58());
         this.$router.push("dashboard");
       }
-    }
-
-  }
-  
-}
+    },
+  },
+};
 </script>
 
 <style>
+.navbar {
+  background-color: black !important;
+  
+}
+
+.nav-item.nav-item.nav-item a {
+  color: white;
+}
+
+.navbar-nav .dropdown-menu {
+  background-color:#444 !important
+}
 
 </style>
