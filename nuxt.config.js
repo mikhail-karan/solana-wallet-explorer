@@ -1,7 +1,7 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'Solana Wallet Explorer',
+    title: 'Solana Portfolio Dashboard',
     htmlAttrs: {
       lang: 'en'
     },
