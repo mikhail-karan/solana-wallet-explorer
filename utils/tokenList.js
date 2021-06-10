@@ -12,5 +12,13 @@ export function returnToken(mintKey){
   let foundToken = tokenList.find(token => {
     return token.address === mintKey
   })
+  if (foundToken){
+    return foundToken
+  }
+  else {
+    foundToken = tokenList.find(token => {
+      return token.symbol === mintKey
+    })
+  }
   return foundToken
 }
