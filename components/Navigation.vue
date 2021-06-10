@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-navbar toggleable="lg" type="lignt" variant="dark">
+    <b-navbar toggleable="lg" type="lignt" variant="light">
       <b-navbar-brand href="" @click="$router.push('/')"
         >Solana Portfolio Dashboard</b-navbar-brand
       >
@@ -114,15 +114,21 @@ export default {
 <style>
 .navbar {
   background-color: black !important;
-  
 }
 
 .nav-item.nav-item.nav-item a {
   color: white;
 }
 
-.navbar-nav .dropdown-menu {
-  background-color:#444 !important
+.nav-item.nav-item.nav-item a:hover {
+  background-color: #555;
 }
 
+.navbar-nav .dropdown-menu {
+  background-color: #444 !important;
+}
+
+.navbar-toggler > .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='rgba(255, 255, 255, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>") !important;
+}
 </style>
