@@ -36,7 +36,10 @@ html {
 }
 
 body {
-  background-image: url('../assets/sky_bg.jpg');
+  background-image: url('../assets/nasa-Q1p7bh3SHj8-unsplash.jpg');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  color:white;
 }
 
 *,

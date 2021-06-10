@@ -1,6 +1,7 @@
 <template>
   <div>
     <b-container>
+      <!--
       <b-row v-if="pubKey">
         <b-col>
           <h2>Solana Account Info</h2>
@@ -10,8 +11,9 @@
           Solana Balance: {{ solLamports }} Lamports
         </b-col>
       </b-row>
+      -->
 
-      <div class="flex flex-col">
+      <div class="flex flex-col snl-padded">
         <div
           class="flex flex-row my-2"
           v-for="token in walletTokens"
@@ -22,9 +24,7 @@
           <div class="mx-2" v-if="token.amount">
             {{ token.amount }} Lamports
           </div>
-          <div class="mx-2" v-if="token.price">
-            ${{ token.price }}
-          </div>
+          <div class="mx-2" v-if="token.price">${{ token.price }}</div>
         </div>
       </div>
     </b-container>
@@ -33,11 +33,8 @@
 
 <script>
 import { Connection, clusterApiUrl, PublicKey } from "@solana/web3.js";
-import {
-  tokenAccountByOwner,
-  extractMintAccounts,
-} from "../utils/connection";
-import {serumMarkets, priceStore} from "../utils/markets.ts"
+import { tokenAccountByOwner, extractMintAccounts } from "../utils/connection";
+import { serumMarkets, priceStore } from "../utils/markets.ts";
 import { returnToken } from "../utils/tokenList";
 export default {
   data() {
@@ -118,10 +115,9 @@ export default {
           if (token){
             token.price = Math.round(((token.amount/(Math.pow(10,token.decimals)))*returnPrice.price) * 100)/100 
           }
-          
-        })
+        });
       }
-      
+
       self.walletTokens.push({
         icon: tokenInfo.logoURI || null,
         amount: _token.amount,
@@ -130,7 +126,7 @@ export default {
         symbol: tokenInfo.symbol,
         marketName: sMarket?.name || null,
         decimals: tokenInfo.decimals,
-        price: price
+        price: price,
       });
     });
   },
@@ -139,4 +135,9 @@ export default {
 </script>
 
 <style>
+.snl-padded {
+    padding: 20px;
+    background-color: rgba(4,4,4,0.6);
+    border-radius: 5px;
+}
 </style>
