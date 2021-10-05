@@ -4,7 +4,7 @@
       <div>
         <b-row class="mb-3">
           <b-col class="text-left"><h1>Wallet</h1></b-col>
-          <b-col class="text-right">${{totalPrice}}</b-col>
+          <b-col class="text-right">${{ totalPrice }}</b-col>
         </b-row>
 
         <b-row class="snl-padded" v-for="token in walletTokens" :key="token.id">
@@ -21,12 +21,10 @@
           <b-col class="text-right">$XYZ.ZZ</b-col>
         </b-row>
         <b-row v-for="pool in walletPools" :key="pool.id" class="snl-padded">
-          <b-col
-            >{{pool.name}}</b-col>
-          <b-col cols="5" class="text-left">{{pool.symbol}}</b-col>
+          <b-col>{{ pool.name }}</b-col>
+          <b-col cols="5" class="text-left">{{ pool.symbol }}</b-col>
           <b-col>$199.99</b-col>
         </b-row>
-
       </div>
 
       <!--
@@ -51,9 +49,15 @@
 
 <script>
 import { Connection, clusterApiUrl, PublicKey } from "@solana/web3.js";
-import { tokenAccountByOwner, extractMintAccounts } from "../utils/connection";
+import {
+  tokenAccountByOwner,
+  extractMintAccounts,
+  extractSwapAccounts,
+} from "../utils/connection";
 import { serumMarkets, priceStore } from "../utils/markets.ts";
 import { returnToken } from "../utils/tokenList";
+import {parsePoolAccountData, parseSwapAccountData} from "../utils/utility"
+import {decodePoolState, loadPoolInfo, isPoolState} from '@project-serum/pool'
 export default {
   data() {
     return {
@@ -69,14 +73,14 @@ export default {
       return this.$store.getters.getPubKey;
     },
     totalPrice() {
-      let _totalPrice = 0
-      this.walletTokens.forEach(token => {
-        if (token.price){
-          _totalPrice += parseFloat(token.price)
+      let _totalPrice = 0;
+      this.walletTokens.forEach((token) => {
+        if (token.price) {
+          _totalPrice += parseFloat(token.price);
         }
-      })
-      return _totalPrice.toFixed(2)
-    }
+      });
+      return _totalPrice.toFixed(2);
+    },
   },
   async mounted() {
     if (!this.pubKey) {
@@ -105,6 +109,12 @@ export default {
     const tokenAccounts = await tokenAccountByOwner(_key.toBase58());
     const mintAccounts = await extractMintAccounts(tokenAccounts);
 
+    // const swapAccounts = await extractSwapAccounts(programAccounts);
+    // .then(res => {
+    //   const swapAccounts = await extractMintAccounts(res);
+    //   debugger
+    // })
+
     const solTokenInfo = returnToken("SOL");
     const solMarket = serumMarkets["SOL"];
     let solToken = {
@@ -123,12 +133,13 @@ export default {
         return tok.marketName === returnPrice.name;
       });
       if (token) {
-        token.price =
-          (Math.round(
+        token.price = (
+          Math.round(
             (token.amount / Math.pow(10, token.decimals)) *
               returnPrice.price *
               100
-          ) / 100).toFixed(2);
+          ) / 100
+        ).toFixed(2);
       }
     });
 
@@ -143,16 +154,17 @@ export default {
             return tok.marketName === returnPrice.name;
           });
           if (token) {
-            token.price =
-              (Math.round(
+            token.price = (
+              Math.round(
                 (token.amount / Math.pow(10, token.decimals)) *
                   returnPrice.price *
                   100
-              ) / 100).toFixed(2);
+              ) / 100
+            ).toFixed(2);
           }
         });
       }
-      if (!tokenInfo.symbol.includes('-')){
+      if (!tokenInfo.symbol.includes("-")) {
         self.walletTokens.push({
           icon: tokenInfo.logoURI || null,
           amount: _token.amount,
@@ -161,10 +173,10 @@ export default {
           symbol: tokenInfo.symbol,
           marketName: sMarket?.name || null,
           decimals: tokenInfo.decimals,
+          accountKey: _token.accountKey,
           price: price,
         });
-      }
-      else {
+      } else {
         self.walletPools.push({
           icon: tokenInfo.logoURI || null,
           amount: _token.amount,
@@ -173,10 +185,52 @@ export default {
           symbol: tokenInfo.symbol,
           marketName: sMarket?.name || null,
           decimals: tokenInfo.decimals,
+          owner: _token.owner.toBase58(),
+          accountKey: _token.accountKey,
           price: price,
-        })
+        });
       }
     });
+    this.walletPools.forEach(pool => {
+      // let poolKey = new PublicKey(pool.accountKey)
+      // loadPoolInfo(connection, poolKey)
+      // .then(res => {
+      //   console.log('Pool Info: ',res)
+      // })
+      debugger
+      connection.getAccountInfo(new PublicKey(pool.accountKey))
+      .then(info => {
+        debugger
+        // let _data = new Buffer(info.data)
+        try {
+          let poolState = decodePoolState(info.data)
+          // let poolState = parsePoolAccountData(info.data)
+          let tokenMint = new PublicKey(poolState.poolTokenMint)
+          let tokenMintString = tokenMint.toBase58()
+          console.log(tokenMintString)
+        } catch (error) {
+          
+        }
+        
+        
+        
+        debugger
+      })
+      
+    })
+    // const programAccounts = await connection.getProgramAccounts(
+    //   new PublicKey("SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8")
+    // );
+    // const swapAccounts = await extractSwapAccounts(programAccounts);
+    // console.log(swapAccounts);
+    // let walletPools = self.walletPools.map((pool) => {
+    //   const foundProgram = swapAccounts.find((swap) => {
+    //     let _pubKey = new PublicKey(swap.mintA).toBase58();
+
+    //     return _pubKey === pool.address;
+    //   });
+    //   debugger;
+    // });
   },
   methods: {},
 };

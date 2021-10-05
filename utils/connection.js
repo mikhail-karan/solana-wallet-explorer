@@ -1,5 +1,5 @@
 import { Connection, clusterApiUrl, PublicKey } from '@solana/web3.js';
-import { parseTokenAccountData } from './utility'
+import { parseTokenAccountData, parseSwapAccountData } from './utility'
 import Wallet from "@project-serum/sol-wallet-adapter";
 
 export const SOL_PROGRAM_TOKEN = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
@@ -22,14 +22,25 @@ export async function tokenAccountByOwner(_publicKey) {
 export async function extractMintAccounts(tokenAccounts) { //pass in token accounts array []
   let mintAccounts = []
   tokenAccounts.forEach(acc => {
+    const accountKey = acc.pubkey.toBase58()
     const { mint, owner, amount } = parseTokenAccountData(acc.account.data)
     mintAccounts.push({
       mint,
       owner,
-      amount
+      amount,
+      accountKey,
     })
   })
   return mintAccounts
+}
+
+export async function extractSwapAccounts(tokenAccounts) { //pass in token accounts array []
+  let swapAccounts = []
+  tokenAccounts.forEach(acc => {
+    const swapAccount = parseSwapAccountData(acc.account.data)
+    swapAccounts.push(swapAccount)
+  })
+  return swapAccounts
 }
 
 export async function connectWallet() {
