@@ -4,14 +4,14 @@
       <div>
         <b-row class="mb-3">
           <b-col class="text-left"><h1>Wallet</h1></b-col>
-          <b-col class="text-right">$XYZ.ZZ</b-col>
+          <b-col class="text-right">${{totalPrice}}</b-col>
         </b-row>
 
         <b-row class="snl-padded" v-for="token in walletTokens" :key="token.id">
           <b-col
             ><img class="w-5 mx-2" :src="token.icon" :alt="token.name"
           /></b-col>
-          <b-col class="text-left">TOKEN_SYMBOL</b-col>
+          <b-col class="text-left">{{ token.symbol }}</b-col>
           <b-col cols="5" class="text-left">{{ token.name }}</b-col>
           <b-col>${{ token.price }}</b-col>
         </b-row>
@@ -20,10 +20,10 @@
           <b-col class="text-left"><h1>Staking Positions</h1></b-col>
           <b-col class="text-right">$XYZ.ZZ</b-col>
         </b-row>
-        <b-row class="snl-padded">
+        <b-row v-for="pool in walletPools" :key="pool.id" class="snl-padded">
           <b-col
-            >Raydium</b-col>
-          <b-col cols="5" class="text-left">OXY / RAY</b-col>
+            >{{pool.name}}</b-col>
+          <b-col cols="5" class="text-left">{{pool.symbol}}</b-col>
           <b-col>$199.99</b-col>
         </b-row>
 
@@ -60,6 +60,7 @@ export default {
       solLamports: 0,
       isExecutable: false,
       walletTokens: [],
+      walletPools: [],
       sol: {},
     };
   },
@@ -67,6 +68,15 @@ export default {
     pubKey() {
       return this.$store.getters.getPubKey;
     },
+    totalPrice() {
+      let _totalPrice = 0
+      this.walletTokens.forEach(token => {
+        if (token.price){
+          _totalPrice += parseFloat(token.price)
+        }
+      })
+      return _totalPrice.toFixed(2)
+    }
   },
   async mounted() {
     if (!this.pubKey) {
@@ -114,11 +124,11 @@ export default {
       });
       if (token) {
         token.price =
-          Math.round(
+          (Math.round(
             (token.amount / Math.pow(10, token.decimals)) *
               returnPrice.price *
               100
-          ) / 100;
+          ) / 100).toFixed(2);
       }
     });
 
@@ -134,25 +144,38 @@ export default {
           });
           if (token) {
             token.price =
-              Math.round(
+              (Math.round(
                 (token.amount / Math.pow(10, token.decimals)) *
                   returnPrice.price *
                   100
-              ) / 100;
+              ) / 100).toFixed(2);
           }
         });
       }
-
-      self.walletTokens.push({
-        icon: tokenInfo.logoURI || null,
-        amount: _token.amount,
-        name: tokenInfo.name,
-        address: tokenInfo.address,
-        symbol: tokenInfo.symbol,
-        marketName: sMarket?.name || null,
-        decimals: tokenInfo.decimals,
-        price: price,
-      });
+      if (!tokenInfo.symbol.includes('-')){
+        self.walletTokens.push({
+          icon: tokenInfo.logoURI || null,
+          amount: _token.amount,
+          name: tokenInfo.name,
+          address: tokenInfo.address,
+          symbol: tokenInfo.symbol,
+          marketName: sMarket?.name || null,
+          decimals: tokenInfo.decimals,
+          price: price,
+        });
+      }
+      else {
+        self.walletPools.push({
+          icon: tokenInfo.logoURI || null,
+          amount: _token.amount,
+          name: tokenInfo.name,
+          address: tokenInfo.address,
+          symbol: tokenInfo.symbol,
+          marketName: sMarket?.name || null,
+          decimals: tokenInfo.decimals,
+          price: price,
+        })
+      }
     });
   },
   methods: {},
